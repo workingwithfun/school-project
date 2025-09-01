@@ -196,8 +196,9 @@ businesses,research institutions.`]}
    Available Schools
   </h2>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-    {schools.map((school, index) => (
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+  {Array.isArray(schools) && schools.length > 0 ? (
+    schools.map((school, index) => (
       <div
         key={school.id}
         className="relative rounded-2xl overflow-hidden shadow-lg group hover:shadow-2xl hover:-translate-y-2 transform transition-all duration-500"
@@ -223,8 +224,14 @@ businesses,research institutions.`]}
           <p className="text-xs opacity-75">{school.city}</p>
         </div>
       </div>
-    ))}
-  </div>
+    ))
+  ) : (
+    <p className="col-span-full text-center text-gray-500">
+      No schools available at the moment.
+    </p>
+  )}
+</div>
+
 </section>
 
 
