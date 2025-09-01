@@ -186,7 +186,7 @@ const result = await res.json();
               },
             })}
             placeholder="Enter email address"
-            className={`w-full border-2 p-2 placeholder-gray-400  rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full border-2 p-2 placeholder-gray-400 text-black  rounded-lg focus:outline-none focus:ring-2 ${
               errors.email_id
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-400"
