@@ -78,7 +78,7 @@ const result = await res.json();
           <input
             {...register("name", { required: "School name is required" })}
             placeholder="Enter school name"
-            className={`w-full border-2 p-2 placeholder-gray-400  rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full border-2 p-2 placeholder-gray-400 text-black rounded-lg focus:outline-none focus:ring-2 ${
               errors.name
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-400"
@@ -97,7 +97,7 @@ const result = await res.json();
           <input
             {...register("address", { required: "Address is required" })}
             placeholder="Enter school address"
-            className={`w-full border-2 p-2 placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full border-2 p-2 placeholder-gray-400 text-black rounded-lg focus:outline-none focus:ring-2 ${
               errors.address
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-400"
@@ -116,7 +116,7 @@ const result = await res.json();
           <input
             {...register("city", { required: "City is required" })}
             placeholder="Enter city"
-            className={`w-full border-2 p-2  placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full border-2 p-2  placeholder-gray-400  text-black rounded-lg focus:outline-none focus:ring-2 ${
               errors.city
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-400"
@@ -133,7 +133,7 @@ const result = await res.json();
           <input
             {...register("state", { required: "State is required" })}
             placeholder="Enter state"
-            className={`w-full border-2 p-3 placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full border-2 p-3 placeholder-gray-400 text-black rounded-lg focus:outline-none focus:ring-2 ${
               errors.state
                 ? "border-red-500 focus:ring-red-400"
                 : "border-gray-300 focus:ring-blue-400"
