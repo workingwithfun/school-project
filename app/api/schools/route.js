@@ -24,6 +24,8 @@ cloudinary.config({
 
 export async function POST(req) {
   try {
+    console.log("📥 POST /api/schools called");
+
     const formData = await req.formData();
 
     const name = formData.get("name");
@@ -34,22 +36,30 @@ export async function POST(req) {
     const email_id = formData.get("email_id");
     const file = formData.get("image");
 
+    // 🔎 Debug logs
+    console.log("Received fields:", { name, address, city, state, contact, email_id });
+    console.log("File received:", file ? file.name : "❌ no file");
+
     let imageUrl = null;
 
     if (file && file.name) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // ✅ Wrap upload_stream in a Promise
+      // ✅ Cloudinary upload (wrapped in Promise)
       imageUrl = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
+        const upload = cloudinary.uploader.upload_stream(
           { folder: "schools" },
           (error, result) => {
-            if (error) return reject(error);
-            resolve(result.secure_url); // ✅ Cloudinary URL
+            if (error) {
+              console.error("❌ Cloudinary upload failed:", error);
+              return reject(error);
+            }
+            console.log("✅ Cloudinary upload success:", result.secure_url);
+            resolve(result.secure_url);
           }
         );
-        stream.end(buffer);
+        upload.end(buffer);
       });
     }
 
