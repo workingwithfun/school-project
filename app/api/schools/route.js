@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import fs from "fs";
+import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import { NextResponse } from "next/server";
 
@@ -17,7 +17,13 @@ export async function GET() {
 }
 
 
-// ✅ POST: add school with image
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 export async function POST(req) {
   try {
     const formData = await req.formData();
@@ -30,34 +36,44 @@ export async function POST(req) {
     const email_id = formData.get("email_id");
     const file = formData.get("image");
 
-    let filename = null;
+    let imageUrl = null;
 
-    // ✅ Handle image file
     if (file && file.name) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const uploadDir = path.join(process.cwd(), "public", "schoolImages");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
+      // Upload buffer to Cloudinary
+      const uploadRes = await cloudinary.uploader.upload_stream(
+        { folder: "schools" },
+        (error, result) => {
+          if (error) throw error;
+          imageUrl = result.secure_url;
+        }
+      );
 
-      filename = Date.now() + "-" + file.name;
-      const filePath = path.join(uploadDir, filename);
-
-      // Write file to /public/schoolImages
-      await fs.promises.writeFile(filePath, buffer);
+      // Pipe buffer into upload stream
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "schools" },
+        (error, result) => {
+          if (error) throw error;
+          imageUrl = result.secure_url;
+        }
+      );
+      stream.end(buffer);
     }
 
-    // ✅ Save record in database
     const db = await connectDB();
     await db.execute(
       "INSERT INTO schools (name, address, city, state, contact, email_id, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [name, address, city, state, contact, email_id, filename]
+      [name, address, city, state, contact, email_id, imageUrl]
     );
 
-    return NextResponse.json({ message: "✅ School added successfully!" });
+    return NextResponse.json({ message: "✅ School added successfully!", imageUrl });
   } catch (error) {
+    console.error("❌ POST /schools failed:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+
+
