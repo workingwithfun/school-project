@@ -63,7 +63,7 @@ const thoughts = [
 <section className="relative w-full mt-8 flex flex-col md:flex-row min-h-[90vh]">
 
   {/* LEFT SIDE - Student */}
-  <div className="w-full md:w-1/2 flex flex-col md:flex-row items-center justify-center bg-gray-50 p-6 md:p-8 relative">
+  <div className="w-full md:w-1/2 flex flex-col md:flex-row items-center justify-center bg-white p-6 md:p-8 relative">
     
     {/* Student Image */}
     <img
