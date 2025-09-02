@@ -1,6 +1,4 @@
 import { connectDB } from "@/lib/db";
-import { v2 as cloudinary } from "cloudinary";
-import path from "path";
 import { NextResponse } from "next/server";
 
 // ✅ GET: fetch schools
@@ -16,12 +14,6 @@ export async function GET() {
   }
 }
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 export async function POST(req) {
   try {
     console.log("📥 POST /api/schools called");
@@ -36,7 +28,6 @@ export async function POST(req) {
     const email_id = formData.get("email_id");
     const file = formData.get("image");
 
-    // 🔎 Debug logs
     console.log("Received fields:", { name, address, city, state, contact, email_id });
     console.log("File received:", file ? file.name : "❌ no file");
 
@@ -46,25 +37,25 @@ export async function POST(req) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // ✅ Cloudinary upload with unsigned preset
-      imageUrl = await new Promise((resolve, reject) => {
-        const upload = cloudinary.uploader.upload_stream(
-          {
-            upload_preset: "schools_unsigned", // 👈 only use preset
-            // do NOT pass timestamp or signature
-            // if you want a fixed folder, set it inside the preset in Cloudinary dashboard
-          },
-          (error, result) => {
-            if (error) {
-              console.error("❌ Cloudinary upload failed:", error);
-              return reject(error);
-            }
-            console.log("✅ Cloudinary upload success:", result.secure_url);
-            resolve(result.secure_url);
-          }
-        );
-        upload.end(buffer);
+      // ✅ Upload to Cloudinary via REST API (unsigned preset)
+      const uploadForm = new FormData();
+      uploadForm.append("file", new Blob([buffer]), file.name);
+      uploadForm.append("upload_preset", "schools_unsigned");
+
+      const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+      const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+        method: "POST",
+        body: uploadForm,
       });
+
+      const data = await uploadRes.json();
+
+      if (data.secure_url) {
+        imageUrl = data.secure_url;
+        console.log("✅ Cloudinary upload success:", imageUrl);
+      } else {
+        throw new Error(data.error?.message || "Cloudinary upload failed");
+      }
     }
 
     // ✅ Save record in DB
