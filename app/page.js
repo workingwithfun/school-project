@@ -223,6 +223,8 @@ businesses,research institutions.`]}
           <h3 className="text-xl font-bold drop-shadow-md">{school.name}</h3>
           <p className="text-sm opacity-90">{school.address}</p>
           <p className="text-xs opacity-75">{school.city}</p>
+          <p className="text-sm opacity-90">{school.email_id}</p>
+          <p className="text-xs opacity-75">{school.contact}</p>
         </div>
       </div>
     ))
