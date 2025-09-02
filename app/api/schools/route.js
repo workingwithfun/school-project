@@ -40,24 +40,17 @@ export async function POST(req) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // Upload buffer to Cloudinary
-      const uploadRes = await cloudinary.uploader.upload_stream(
-        { folder: "schools" },
-        (error, result) => {
-          if (error) throw error;
-          imageUrl = result.secure_url;
-        }
-      );
-
-      // Pipe buffer into upload stream
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "schools" },
-        (error, result) => {
-          if (error) throw error;
-          imageUrl = result.secure_url;
-        }
-      );
-      stream.end(buffer);
+      // ✅ Wrap upload_stream in a Promise
+      imageUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "schools" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result.secure_url); // ✅ Cloudinary URL
+          }
+        );
+        stream.end(buffer);
+      });
     }
 
     const db = await connectDB();
@@ -66,7 +59,10 @@ export async function POST(req) {
       [name, address, city, state, contact, email_id, imageUrl]
     );
 
-    return NextResponse.json({ message: "✅ School added successfully!", imageUrl });
+    return NextResponse.json({
+      message: "✅ School added successfully!",
+      imageUrl,
+    });
   } catch (error) {
     console.error("❌ POST /schools failed:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
