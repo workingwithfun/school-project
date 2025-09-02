@@ -49,7 +49,9 @@ export async function POST(req) {
       // ✅ Cloudinary upload (wrapped in Promise)
       imageUrl = await new Promise((resolve, reject) => {
         const upload = cloudinary.uploader.upload_stream(
-          { folder: "schools" },
+          { folder: "schools",
+            upload_preset: "schools_unsigned"
+          },
           (error, result) => {
             if (error) {
               console.error("❌ Cloudinary upload failed:", error);
