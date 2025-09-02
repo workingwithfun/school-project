@@ -206,13 +206,14 @@ businesses,research institutions.`]}
         data-aos-delay={index * 100}
       >
         {/* School Image */}
-        <Image
-          src={`/schoolImages/${school.image}`}
-          alt={school.name}
-          width={400}
-          height={250}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
-        />
+<Image
+  src={school.image} // 👈 use the full Cloudinary URL
+  alt={school.name}
+  width={400}
+  height={250}
+  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+/>
+
 
         {/* Overlay with gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-90 group-hover:opacity-100 transition duration-500"></div>
