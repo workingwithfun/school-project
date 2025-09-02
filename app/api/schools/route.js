@@ -46,11 +46,13 @@ export async function POST(req) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      // ✅ Cloudinary upload (wrapped in Promise)
+      // ✅ Cloudinary upload with unsigned preset
       imageUrl = await new Promise((resolve, reject) => {
         const upload = cloudinary.uploader.upload_stream(
-          { folder: "schools",
-            upload_preset: "schools_unsigned"
+          {
+            upload_preset: "schools_unsigned", // 👈 only use preset
+            // do NOT pass timestamp or signature
+            // if you want a fixed folder, set it inside the preset in Cloudinary dashboard
           },
           (error, result) => {
             if (error) {
@@ -65,6 +67,7 @@ export async function POST(req) {
       });
     }
 
+    // ✅ Save record in DB
     const db = await connectDB();
     await db.execute(
       "INSERT INTO schools (name, address, city, state, contact, email_id, image) VALUES (?, ?, ?, ?, ?, ?, ?)",
